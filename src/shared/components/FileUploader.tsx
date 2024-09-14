@@ -7,37 +7,38 @@ interface FileUploaderProps {
   fileInputRef: React.RefObject<HTMLInputElement>;
 }
 
-export const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange, fileInputRef }) => {
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      onFileChange(event.target.files[0]);
-    }
-  };
+export const FileUploader:
+  React.FC<FileUploaderProps> = ({ onFileChange, fileInputRef }) => {
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files) {
+        onFileChange(event.target.files[0]);
+      }
+    };
 
-  const handleClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+    const handleClick = () => {
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+      }
+    };
 
-  return (
-    <div>
-      <input
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={handleFileChange}
-        ref={fileInputRef}
-        style={{ display: 'none' }} 
-      />
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<CloudUploadIcon />}
-        onClick={handleClick}
-      >
-        Realizar Medição
-      </Button>
-    </div>
-  );
-};
+    return (
+      <div>
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleFileChange}
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<CloudUploadIcon />}
+          onClick={handleClick}
+        >
+          Realizar Medição
+        </Button>
+      </div>
+    );
+  };

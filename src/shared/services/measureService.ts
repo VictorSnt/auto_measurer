@@ -1,4 +1,5 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
+import { AppUrl } from '../environment/variables';
 
 interface MeasurePayload {
   image: string;
@@ -9,7 +10,7 @@ interface MeasurePayload {
 
 export class MeasureService {
   private measurePayload: MeasurePayload;
-  private readonly url: string = 'http://localhost:3000/upload';
+  private readonly url: string = `${AppUrl}/upload`;
 
   constructor(measurePayload: MeasurePayload) {
     this.measurePayload = measurePayload;
@@ -33,7 +34,7 @@ export class MeasureService {
           );
           throw new Error(errorMessage);
         }
-      }
+      }  
       throw new Error('Erro inesperado ao ler imagem');
     }
   }
