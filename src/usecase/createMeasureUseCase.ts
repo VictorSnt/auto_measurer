@@ -11,7 +11,7 @@ export class CreateMeasureUseCase {
   static execute = async (props: CreateMeasureUseCaseProps) => {
     const payload = {
       image: await Base64Service.convertToBase64(props.file),
-      customer_code: 'string45',
+      customer_code: 'stringsrsd65',
       measure_datetime: new Date(),
       measure_type: props.measure_type
     };

@@ -11,7 +11,7 @@ export class Toaster {
 }
 
 class Notify {
-  sucess(title: string, message: string) {
+  success(title: string, message: string) {
     Swal.fire({
       icon: 'success',
       text: message,
@@ -37,8 +37,8 @@ class Notify {
 }
 
 class Dialog {
-  show(title: string, message: string) {
-    Swal.fire({
+  show(title: string, message: string): Promise<boolean> {
+    return Swal.fire({
       title: title,
       text: message,
       icon: 'warning',
@@ -47,12 +47,7 @@ class Dialog {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Confirmar'
     }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: 'Concluido!',
-          icon: 'success'
-        });
-      }
+      return result.isConfirmed;
     });
   }
-} 
+}
