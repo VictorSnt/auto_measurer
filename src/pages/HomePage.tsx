@@ -6,6 +6,7 @@ import { FileUploader } from '../shared/components/FileUploader';
 import { MeasurementResult } from '../shared/components/MeasurementResult';
 import { CreateMeasurePayloadResponse } from '../shared/services/measureServiceInterfaces';
 import { CreateMeasureUseCase } from '../usecase/createMeasureUseCase';
+import { Toaster } from '../shared/services/notificationService';
 
 
 export const HomePage: React.FC = () => {
@@ -21,25 +22,26 @@ export const HomePage: React.FC = () => {
   };
 
   useEffect(() => {
-    try {
-      if (file) {
-        const usecasePayload = {
-          measure_type: isWater ? 'WATER' : 'GAS',
-          file: file,
-          responseSetter: setMeasure,
-        }
-        CreateMeasureUseCase.execute(usecasePayload);
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert('An unknown error occurred');
-      }
-      setFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+    if (file) {
+      const usecasePayload = {
+        measure_type: isWater ? 'WATER' : 'GAS',
+        file: file,
+        responseSetter: setMeasure,
+      };
+      CreateMeasureUseCase.execute(usecasePayload)
+        .catch(error => {
+          const toaster = new Toaster();
+          console.error(error);
+          if (error instanceof Error) {
+            toaster.notify.error('Opps', error.message);
+          } else {
+            toaster.notify.error('Opps', 'Ocorreu um erro inesperado');
+          }
+          setFile(null);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+        });
     }
   }, [file, isWater]);
 

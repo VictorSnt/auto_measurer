@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CreateMeasurePayloadResponse } from '../services/measureServiceInterfaces';
 import { ConfirmMeasureService } from '../services/measureService';
+import { Toaster } from '../services/notificationService';
 
 
 interface MeasurementResultProps {
@@ -26,7 +27,10 @@ export const MeasurementResult:
       };
       const service = new ConfirmMeasureService(payload);
       const response = await service.confirmMeasure();
-      response?.success ? alert('Confirmado') : alert('erro ao confrimar');
+      const toaster = new Toaster();
+      response?.success ? 
+        toaster.notify.sucess('Confirmado', 'Confimação registrada com sucesso') : 
+        toaster.notify.error('Opps', 'erro ao confrimar medição, tente novamente');
     };
 
     useEffect(() => {
