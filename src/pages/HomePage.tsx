@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { LayoutBase } from '../shared/layouts/base';
-import { CreateMeasurePayloadResponse, CreateMeasureService } from '../shared/services/measureService';
+
 import { Base64Service } from '../shared/services/base64Service';
 import { MeasurementSelector } from '../shared/components/MeasurementSelector';
 import { ExampleImage } from '../shared/components/ExampleImage';
 import { FileUploader } from '../shared/components/FileUploader';
 import { MeasurementResult } from '../shared/components/MeasurementResult';
+import { CreateMeasurePayloadResponse } from '../shared/services/measureServiceInterfaces';
+import { CreateMeasureService } from '../shared/services/measureService';
 
 
 export const HomePage: React.FC = () => {

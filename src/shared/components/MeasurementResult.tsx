@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ConfirmMeasurement, CreateMeasurePayloadResponse } from '../services/measureService';
+import { CreateMeasurePayloadResponse } from '../services/measureServiceInterfaces';
+import { ConfirmMeasureService } from '../services/measureService';
+
 
 interface MeasurementResultProps {
   file: File | null;
@@ -22,10 +24,9 @@ export const MeasurementResult:
         measure_uuid: measure.measure_uuid,
         confirmed_value: parseInt(confirmationValue)
       };
-      const service = new ConfirmMeasurement(payload);
+      const service = new ConfirmMeasureService(payload);
       const response = await service.confirmMeasure();
-      console.log(response);
-      response.success ? alert('Confirmado') : alert('erro ao confrimar');
+      response?.success ? alert('Confirmado') : alert('erro ao confrimar');
     };
 
     useEffect(() => {

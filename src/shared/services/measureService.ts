@@ -1,93 +1,70 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { AppUrl } from '../environment/variables';
-
-export interface CreateMeasurePayloadRequest {
-  image: string;
-  customer_code: string;
-  measure_datetime: Date;
-  measure_type: string;
-}
-
-export interface CreateMeasurePayloadResponse {
-  image_url: string;
-  measure_value: string;
-  measure_uuid: string;
-}
-
-export interface ConfirmMeasurePayloadRequest {
-  measure_uuid: string
-  confirmed_value: number
-}
-
-export interface ConfirmMeasurePayloadResponse {
-  success: boolean
-}
+import {
+  ConfirmMeasurePayloadRequest, ConfirmMeasurePayloadResponse, ConfirmService,
+  CreateMeasurePayloadRequest, CreateMeasurePayloadResponse,
+  MeasureService
+} from './measureServiceInterfaces';
 
 
-export class CreateMeasureService {
-  private payload: CreateMeasurePayloadRequest;
+export class CreateMeasureService implements MeasureService {
   private readonly url: string = `${AppUrl}/upload`;
 
-  constructor(createMeasurePayload: CreateMeasurePayloadRequest) {
-    this.payload = createMeasurePayload;
-  }
+  constructor(private payload: CreateMeasurePayloadRequest) { }
 
-  async getMeasure(): Promise<CreateMeasurePayloadResponse> {
+  async getMeasure(): Promise<CreateMeasurePayloadResponse | null> {
     try {
-      const response = await axios.post(this.url, this.payload);
-
+      const response:
+        AxiosResponse<CreateMeasurePayloadResponse> = (
+          await axios.post(this.url, this.payload)
+        );
       if (response.status === 200) {
         return response.data;
       } else {
         throw new Error(`Unexpected status code: ${response.status}`);
       }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          const errorMessage = (
-            error.response.data?.error_description ||
-            'An unknown error occurred'
-          );
-          throw new Error(errorMessage);
-        }
-      }
-      console.error(error);
-      throw new Error('Erro inesperado ao ler imagem');
+    } catch (error) {
+      genericErrorHandler(error);
+      return null;
     }
   }
-
 }
 
 
-export class ConfirmMeasurement {
-  private payload: ConfirmMeasurePayloadRequest;
+export class ConfirmMeasureService implements ConfirmService {
   private readonly url: string = `${AppUrl}/confirm`;
 
-  constructor(confirmMeasurePayload: ConfirmMeasurePayloadRequest) {
-    this.payload = confirmMeasurePayload;
-  }
+  constructor(private payload: ConfirmMeasurePayloadRequest) { }
 
-  async confirmMeasure(): Promise<ConfirmMeasurePayloadResponse> {
+  async confirmMeasure(): Promise<ConfirmMeasurePayloadResponse|null> {
     try {
-      const response = await axios.patch(this.url, this.payload);
-
+      const response: AxiosResponse<
+        ConfirmMeasurePayloadResponse
+      > = await axios.patch(
+        this.url, this.payload
+      );
       if (response.status === 200) {
         return response.data;
       } else {
         throw new Error(`Unexpected status code: ${response.status}`);
       }
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          const errorMessage = (
-            error.response.data?.error_description ||
-            'An unknown error occurred'
-          );
-          throw new Error(errorMessage);
-        }
-      }
-      console.error(error);
-      throw new Error('Erro inesperado ao ler imagem');
+      genericErrorHandler(error);
+      return null;
     }
   }
 }
+
+
+const genericErrorHandler = (error: unknown): never => {
+  if (axios.isAxiosError(error)) {
+    if (error.response) {
+      const errorMessage = (
+        error.response.data?.error_description ||
+        'An unknown error occurred'
+      );
+      throw new Error(errorMessage);
+    }
+  }
+  throw new Error('Unexpected error occurred');
+};
