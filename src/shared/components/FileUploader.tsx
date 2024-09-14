@@ -25,6 +25,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange, fileIn
       <input
         type="file"
         accept="image/*"
+        capture="environment"
         onChange={handleFileChange}
         ref={fileInputRef}
         style={{ display: 'none' }} 
