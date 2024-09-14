@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 export interface ILayoutBaseProps {
   title: string;
   children: React.ReactNode;
-  animation?: any;
+  animation?: File;
 }
 
 export const LayoutBase:

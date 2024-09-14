@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { LayoutBase } from '../shared/layouts/base';
-import { MeasureService } from '../shared/services/measureService';
+import { CreateMeasurePayloadResponse, CreateMeasureService } from '../shared/services/measureService';
 import { Base64Service } from '../shared/services/base64Service';
 import { MeasurementSelector } from '../shared/components/MeasurementSelector';
 import { ExampleImage } from '../shared/components/ExampleImage';
@@ -11,7 +11,7 @@ import { MeasurementResult } from '../shared/components/MeasurementResult';
 export const HomePage: React.FC = () => {
   const [isWater, setIsWater] = useState<boolean>(true);
   const [file, setFile] = useState<File | null>(null);
-  const [measure, setMeasure] = useState<any | null>(null);
+  const [measure, setMeasure] = useState<CreateMeasurePayloadResponse | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleChange = (type: boolean) => {
@@ -24,16 +24,20 @@ export const HomePage: React.FC = () => {
     const transformFile = async (file: File) => {
       const payload = {
         image: await Base64Service.convertToBase64(file),
-        customer_code: 'string1',
+        customer_code: 'string45',
         measure_datetime: new Date(),
         measure_type: isWater ? 'WATER' : 'GAS'
       };
-      const service = new MeasureService(payload);
+      const service = new CreateMeasureService(payload);
       try {
         const response = await service.getMeasure();
         setMeasure(response);
-      } catch (error: any) {
-        alert(error.message);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          alert(error.message);
+        } else {
+          alert('An unknown error occurred');
+        }
         setFile(null);
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
@@ -57,7 +61,7 @@ export const HomePage: React.FC = () => {
             <FileUploader onFileChange={setFile} fileInputRef={fileInputRef} />
           </>
         ) : (
-          <MeasurementResult file={file!} measure={measure} />
+          <MeasurementResult file={file} measure={measure} />
         )}
       </div>
     </LayoutBase>
