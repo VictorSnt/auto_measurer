@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { LayoutBase } from '../shared/layouts/base';
-
-import { Base64Service } from '../shared/services/base64Service';
 import { MeasurementSelector } from '../shared/components/MeasurementSelector';
 import { ExampleImage } from '../shared/components/ExampleImage';
 import { FileUploader } from '../shared/components/FileUploader';
 import { MeasurementResult } from '../shared/components/MeasurementResult';
 import { CreateMeasurePayloadResponse } from '../shared/services/measureServiceInterfaces';
-import { CreateMeasureService } from '../shared/services/measureService';
+import { CreateMeasureUseCase } from '../usecase/createMeasureUseCase';
 
 
 export const HomePage: React.FC = () => {
@@ -23,32 +21,25 @@ export const HomePage: React.FC = () => {
   };
 
   useEffect(() => {
-    const transformFile = async (file: File) => {
-      const payload = {
-        image: await Base64Service.convertToBase64(file),
-        customer_code: 'string45',
-        measure_datetime: new Date(),
-        measure_type: isWater ? 'WATER' : 'GAS'
-      };
-      const service = new CreateMeasureService(payload);
-      try {
-        const response = await service.getMeasure();
-        setMeasure(response);
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          alert(error.message);
-        } else {
-          alert('An unknown error occurred');
+    try {
+      if (file) {
+        const usecasePayload = {
+          measure_type: isWater ? 'WATER' : 'GAS',
+          file: file,
+          responseSetter: setMeasure,
         }
-        setFile(null);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
+        CreateMeasureUseCase.execute(usecasePayload);
       }
-    };
-
-    if (file) {
-      transformFile(file);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('An unknown error occurred');
+      }
+      setFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   }, [file, isWater]);
 
