@@ -1,3 +1,7 @@
+import React from 'react';
+import { Button } from '@mui/material';
+import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
+
 interface FileUploaderProps {
   onFileChange: (file: File | null) => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
@@ -10,13 +14,29 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange, fileIn
     }
   };
 
+  const handleClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleFileChange}
-      ref={fileInputRef}
-      style={{ marginTop: '20px' }}
-    />
+    <div>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        ref={fileInputRef}
+        style={{ display: 'none' }} 
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<CloudUploadIcon />}
+        onClick={handleClick}
+      >
+        Realizar Medição
+      </Button>
+    </div>
   );
 };
