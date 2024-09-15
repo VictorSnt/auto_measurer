@@ -1,12 +1,8 @@
 import React from 'react';
-import { 
-  Card, CardActions, CardContent, 
-  CardMedia, Button, Typography, 
-  Box, TextField 
-} from '@mui/material';
+import { Card, CardActions, CardContent, CardMedia, Button, Typography, Box, TextField, IconButton } from '@mui/material';
 import { Measurement } from '../services/measureServiceInterfaces';
 import { ImgStorageService } from '../services/imgStorageService';
-
+import ZoomIn from '@mui/icons-material/ZoomIn';
 
 interface MeasurementCardProps {
   measurement: Measurement;
@@ -15,7 +11,7 @@ interface MeasurementCardProps {
   inputValue: string;
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleConfirmMeasurement: (measurementUuid: string) => void;
-  onImageClick: (imageUrl: string) => void;
+  onImageClick: (imageUrl: string) => void; // Prop for handling image clicks
 }
 
 export const MeasurementCard: React.FC<MeasurementCardProps> = ({
@@ -29,12 +25,29 @@ export const MeasurementCard: React.FC<MeasurementCardProps> = ({
 }) => {
   return (
     <Card sx={{ maxWidth: 345, display: 'flex', flexDirection: 'column' }}>
-      <CardMedia
-        sx={{ height: 140, backgroundSize: 'cover', cursor: 'pointer' }}
-        image={ImgStorageService.getImage(measurement)}
-        title={`Imagem da medição ${measurement.measure_uuid}`}
-        onClick={() => onImageClick(ImgStorageService.getImage(measurement))} 
-      />
+      <Box sx={{ position: 'relative' }}>
+        <CardMedia
+          sx={{ height: 140, backgroundSize: 'cover', cursor: 'pointer' }}
+          image={ImgStorageService.getImage(measurement)}
+          title={`Imagem da medição ${measurement.measure_uuid}`}
+          onClick={() => onImageClick(ImgStorageService.getImage(measurement))} // Use onImageClick
+        />
+        {/* Overlay icon */}
+        <IconButton
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            color: 'white',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            borderRadius: '50%',
+            padding: 1,
+          }}
+          onClick={() => onImageClick(ImgStorageService.getImage(measurement))}
+        >
+          <ZoomIn />
+        </IconButton>
+      </Box>
       <CardContent sx={{ flex: 1 }}>
         <Typography gutterBottom variant="h5" component="div">
           {measurement.measure_type === 'WATER' ? 'Água' : 'Gás'}
