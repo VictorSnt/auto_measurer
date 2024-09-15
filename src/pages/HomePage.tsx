@@ -17,6 +17,7 @@ export const HomePage: React.FC = () => {
   const [showLoading, setShowLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [measure, setMeasure] = useState<CreateMeasurePayloadResponse | null>(null);
+  const toaster = new Toaster();
 
   const handleChange = (type: boolean) => {
     setIsWater(type);
@@ -36,7 +37,6 @@ export const HomePage: React.FC = () => {
           };
           await CreateMeasureUseCase.execute(usecasePayload);
         } catch (error) {
-          const toaster = new Toaster();
           console.error(error);
           if (error instanceof Error) {
             toaster.notify.error('Oops', error.message);
@@ -57,8 +57,8 @@ export const HomePage: React.FC = () => {
 
   return (
     <LayoutBase title='Nova Medição'>
-      <LoadingAnimation 
-        loadingAnimation={loadingAnimation} 
+      <LoadingAnimation
+        loadingAnimation={loadingAnimation}
         showLoading={showLoading}
       />
       <div style={{ textAlign: 'center', padding: '20px' }}>

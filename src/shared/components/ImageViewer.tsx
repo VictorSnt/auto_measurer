@@ -47,8 +47,8 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ imageUrl, isOpen, onCl
         className="image-viewer-content"
         sx={{
           position: 'relative',
-          maxWidth: '80%',  // Adjusted width
-          maxHeight: '80%', // Adjusted height
+          maxWidth: '80%',
+          maxHeight: '80%',
           overflow: 'hidden',
         }}
       >

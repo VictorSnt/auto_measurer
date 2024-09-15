@@ -50,4 +50,31 @@ class Dialog {
       return result.isConfirmed;
     });
   }
+
+  async askCustomer(): Promise<boolean> {
+    const result = await Swal.fire({
+      title: 'Seja bem-vindo!',
+      text: 'Preciso identificar você, informe seu código por favor!',
+      input: 'text',
+      inputPlaceholder: 'Digite seu código',
+      showCancelButton: false,
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Confirmar',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'O código é obrigatório!';
+        }
+        return null;
+      },
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: true,
+    });
+
+    if (result.isConfirmed) {
+      localStorage.setItem('customerId', result.value);
+      return true;
+    }
+    return false;
+  }
 }

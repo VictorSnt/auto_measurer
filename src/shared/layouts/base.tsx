@@ -3,6 +3,7 @@ import { Box, useTheme } from '@mui/material';
 import React from 'react';
 import { PaperBackground } from '../components/PaperBackground';
 import { motion } from 'framer-motion';
+import { AskCustomerCode } from '../components/AskCustomerCode';
 
 export interface ILayoutBaseProps {
   title: string;
@@ -20,6 +21,7 @@ export const LayoutBase:
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
+        <AskCustomerCode />
         <Box
           display="flex"
           flexDirection="column"

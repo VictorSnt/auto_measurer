@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LayoutBase } from '../shared/layouts/base';
 import { Measurement } from '../shared/services/measureServiceInterfaces';
 import { ListCustomerMesures } from '../shared/services/measureService';
 import { Toaster } from '../shared/services/notificationService';
-import { Box, Typography, Button, TextField } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import { ConfirmMeasureUsecase } from '../usecase/confirmMeasureUseCase';
 import { Swiper as SwiperComponent, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
@@ -13,37 +13,45 @@ import { MeasurementCard } from '../shared/components/MeasurementCard';
 import { ImageViewer } from '../shared/components/ImageViewer';
 
 
-
 export const MeasureListage: React.FC = () => {
-  const [measurements, setMeasurements] = useState<Measurement[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [editingMeasurement, setEditingMeasurement] = useState<string | null>(null);
+
   const [inputValue, setInputValue] = useState<string>('');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [filterType, setFilterType] = useState<'ALL' | 'WATER' | 'GAS'>('ALL');
-  const [imageUrl, setImageUrl] = useState<string | null>(null); // State for the image URL to display
+  const [editingMeasurement, setEditingMeasurement] = useState<string | null>(null);
 
   const toaster = new Toaster();
 
-  const loadMeasurements = useCallback(async (type: 'ALL' | 'WATER' | 'GAS') => {
+  const loadMeasurements = async (type: 'ALL' | 'WATER' | 'GAS') => {
     const measurementsLister = new ListCustomerMesures();
+    const customerId = localStorage.getItem('customerId') || 'guest';
     try {
       const response = await measurementsLister.getMeasures(
-        'str3',
+        customerId,
         type === 'ALL' ? false : `?measure_type=${type}`
       );
-      if (response) {
+
+      if (response && response.measures) {
         setMeasurements(response.measures);
+      } else {
+        setMeasurements([]);
       }
     } catch (error: any) {
       console.error(error);
-      toaster.notify.error('Oops', error instanceof Error ? error.message : 'Ocorreu um erro inesperado');
-      setError(error.message);
+      setMeasurements([]);
+      toaster.notify.error(
+        'Oops',
+        error instanceof Error ?
+          error.message :
+          'Ocorreu um erro inesperado'
+      );
     }
-  }, [toaster]);
+  };
 
   useEffect(() => {
     loadMeasurements(filterType);
-  }, [filterType, loadMeasurements]);
+  }, [filterType]);
 
   const handleConfirmClick = (measurementUuid: string) => {
     setEditingMeasurement(measurementUuid);
@@ -62,7 +70,11 @@ export const MeasureListage: React.FC = () => {
       await loadMeasurements(filterType);
     } catch (error: any) {
       console.error(error);
-      toaster.notify.error('Oops', error instanceof Error ? error.message : 'Ocorreu um erro inesperado');
+      toaster.notify.error(
+        'Oops', error instanceof Error ?
+          error.message :
+          'Ocorreu um erro inesperado'
+      );
     }
   };
 
@@ -83,7 +95,6 @@ export const MeasureListage: React.FC = () => {
         <Typography variant="h6" color="text.secondary" gutterBottom>
           Visualize e confirme suas medições abaixo
         </Typography>
-        {error && <Typography variant="body1" color="error">{error}</Typography>}
 
         <Box sx={{ marginBottom: '20px' }}>
           <Button
@@ -109,7 +120,7 @@ export const MeasureListage: React.FC = () => {
         </Box>
 
         {measurements.length === 0 ? (
-          <Typography variant="body1">Nenhuma medição encontrada.</Typography>
+          <Typography color="error" variant="body1">Nenhuma medição encontrada.</Typography>
         ) : (
           <SwiperComponent
             spaceBetween={16}
@@ -141,7 +152,7 @@ export const MeasureListage: React.FC = () => {
                   inputValue={inputValue}
                   handleInputChange={handleInputChange}
                   handleConfirmMeasurement={handleConfirmMeasurement}
-                  onImageClick={handleImageClick} // Pass handler to card
+                  onImageClick={handleImageClick}
                 />
               </SwiperSlide>
             ))}
@@ -149,7 +160,6 @@ export const MeasureListage: React.FC = () => {
         )}
       </Box>
 
-      {/* Render ImageViewer with current imageUrl */}
       <ImageViewer
         imageUrl={imageUrl ?? ''}
         isOpen={!!imageUrl}

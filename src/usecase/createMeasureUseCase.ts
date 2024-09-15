@@ -10,10 +10,11 @@ interface CreateMeasureUseCaseProps {
 
 export class CreateMeasureUseCase {
   static execute = async (props: CreateMeasureUseCaseProps) => {
+    const customerId = localStorage.getItem('customerId') || 'guest';
     const img = await Base64Service.convertToBase64(props.file);
     const payload = {
       image: img,
-      customer_code: 'str3',
+      customer_code: customerId,
       measure_datetime: new Date(),
       measure_type: props.measure_type
     };
