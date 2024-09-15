@@ -1,4 +1,5 @@
 import { Base64Service } from '../shared/services/base64Service';
+import { ImgStorageService } from '../shared/services/imgStorageService';
 import { CreateMeasureService } from '../shared/services/measureService';
 
 interface CreateMeasureUseCaseProps {
@@ -9,14 +10,18 @@ interface CreateMeasureUseCaseProps {
 
 export class CreateMeasureUseCase {
   static execute = async (props: CreateMeasureUseCaseProps) => {
+    const img = await Base64Service.convertToBase64(props.file);
     const payload = {
-      image: await Base64Service.convertToBase64(props.file),
-      customer_code: 'str1',
+      image: img,
+      customer_code: 'str3',
       measure_datetime: new Date(),
       measure_type: props.measure_type
     };
     const service = new CreateMeasureService(payload);
     const response = await service.getMeasure();
+    if (response?.measure_uuid) {
+      ImgStorageService.saveImage(response?.measure_uuid, img);
+    }
     props.responseSetter(response);
   };
 }

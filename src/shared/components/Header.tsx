@@ -23,20 +23,20 @@ export interface IHeaderProps {
 }
 
 const linkStyles = (active: boolean) => ({
-  color: '#333',  
+  color: '#fff',  
   padding: '12px 24px',
   borderRadius: 8,
   fontWeight: 'bold',
   margin: '8px 0',
   transition: 'all 0.3s ease',
-  backgroundColor: active ? '#e3f2fd' : 'transparent',
+  backgroundColor: active ? '#61bdff' : 'transparent',
   textDecoration: active ? 'underline' : 'none',
   '&:hover': {
     textDecoration: 'underline',
-    backgroundColor: '#b3e5fc', 
+    backgroundColor: '#8fd8fa', 
   },
   '&:active': {
-    backgroundColor: '#81d4fa',
+    backgroundColor: '#57c9fd',
   },
 });
 
@@ -52,8 +52,8 @@ const DrawerHeader = styled(Box)`
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background-color: #3f51b5;
-  color: #fff; // White text color
+  background-color: inherit;
+  color: inherit;
 `;
 
 const DrawerList = ({ toggleDrawer }: { toggleDrawer: () => void }) => {

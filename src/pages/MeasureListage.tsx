@@ -1,35 +1,36 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { LayoutBase } from '../shared/layouts/base';
 import { Measurement } from '../shared/services/measureServiceInterfaces';
 import { ListCustomerMesures } from '../shared/services/measureService';
 import { Toaster } from '../shared/services/notificationService';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { Box, TextField } from '@mui/material';
+import { Box, Typography, Button, TextField } from '@mui/material';
 import { ConfirmMeasureUsecase } from '../usecase/confirmMeasureUseCase';
-
-
 import { Swiper as SwiperComponent, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import { MeasurementCard } from '../shared/components/MeasurementCard';
+import { ImageViewer } from '../shared/components/ImageViewer';
+
+
 
 export const MeasureListage: React.FC = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [editingMeasurement, setEditingMeasurement] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>('');
+  const [filterType, setFilterType] = useState<'ALL' | 'WATER' | 'GAS'>('ALL');
+  const [imageUrl, setImageUrl] = useState<string | null>(null); // State for the image URL to display
 
   const toaster = new Toaster();
 
-  const loadMeasurements = useCallback(async () => {
+  const loadMeasurements = useCallback(async (type: 'ALL' | 'WATER' | 'GAS') => {
     const measurementsLister = new ListCustomerMesures();
     try {
-      const response = await measurementsLister.getMeasures('str1');
+      const response = await measurementsLister.getMeasures(
+        'str3',
+        type === 'ALL' ? false : `?measure_type=${type}`
+      );
       if (response) {
         setMeasurements(response.measures);
       }
@@ -41,8 +42,8 @@ export const MeasureListage: React.FC = () => {
   }, [toaster]);
 
   useEffect(() => {
-    loadMeasurements();
-  }, [loadMeasurements]);
+    loadMeasurements(filterType);
+  }, [filterType, loadMeasurements]);
 
   const handleConfirmClick = (measurementUuid: string) => {
     setEditingMeasurement(measurementUuid);
@@ -58,11 +59,19 @@ export const MeasureListage: React.FC = () => {
       await confirmMeasure.execute(measurementUuid, inputValue);
       setEditingMeasurement(null);
       setInputValue('');
-      await loadMeasurements();
+      await loadMeasurements(filterType);
     } catch (error: any) {
       console.error(error);
       toaster.notify.error('Oops', error instanceof Error ? error.message : 'Ocorreu um erro inesperado');
     }
+  };
+
+  const handleImageClick = (url: string) => {
+    setImageUrl(url);
+  };
+
+  const handleCloseImageViewer = () => {
+    setImageUrl(null);
   };
 
   return (
@@ -75,13 +84,37 @@ export const MeasureListage: React.FC = () => {
           Visualize e confirme suas medições abaixo
         </Typography>
         {error && <Typography variant="body1" color="error">{error}</Typography>}
+
+        <Box sx={{ marginBottom: '20px' }}>
+          <Button
+            variant={filterType === 'ALL' ? 'contained' : 'outlined'}
+            onClick={() => setFilterType('ALL')}
+          >
+            Todas
+          </Button>
+          <Button
+            variant={filterType === 'WATER' ? 'contained' : 'outlined'}
+            onClick={() => setFilterType('WATER')}
+            sx={{ marginLeft: '8px' }}
+          >
+            Água
+          </Button>
+          <Button
+            variant={filterType === 'GAS' ? 'contained' : 'outlined'}
+            onClick={() => setFilterType('GAS')}
+            sx={{ marginLeft: '8px' }}
+          >
+            Gás
+          </Button>
+        </Box>
+
         {measurements.length === 0 ? (
           <Typography variant="body1">Nenhuma medição encontrada.</Typography>
         ) : (
           <SwiperComponent
             spaceBetween={16}
             slidesPerView="auto"
-            navigation={true} 
+            navigation={true}
             modules={[Navigation]}
             breakpoints={{
               640: {
@@ -101,57 +134,27 @@ export const MeasureListage: React.FC = () => {
           >
             {measurements.map(measurement => (
               <SwiperSlide key={measurement.measure_uuid}>
-                <Card sx={{ maxWidth: 345, display: 'flex', flexDirection: 'column' }}>
-                  <CardMedia
-                    sx={{ height: 140, backgroundSize: 'cover' }}
-                    image={measurement.image_url}
-                    title={`Imagem da medição ${measurement.measure_uuid}`}
-                  />
-                  <CardContent sx={{ flex: 1 }}>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {measurement.measure_type === 'WATER' ? 'Água' : 'Gás'}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Data: {new Date(measurement.measure_datetime).toLocaleDateString()}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Confirmado: {measurement.has_confirmed ? 'Sim' : 'Não'}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    {!measurement.has_confirmed && (
-                      <>
-                        <Button size="small" onClick={() => handleConfirmClick(measurement.measure_uuid)}>
-                          Confirmar Medida
-                        </Button>
-                        {editingMeasurement === measurement.measure_uuid && (
-                          <Box sx={{ marginTop: '16px' }}>
-                            <TextField
-                              fullWidth
-                              label="Digite o valor"
-                              variant="outlined"
-                              value={inputValue}
-                              onChange={handleInputChange}
-                              sx={{ marginBottom: '8px' }}
-                            />
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              onClick={() => handleConfirmMeasurement(measurement.measure_uuid)}
-                            >
-                              Confirmar
-                            </Button>
-                          </Box>
-                        )}
-                      </>
-                    )}
-                  </CardActions>
-                </Card>
+                <MeasurementCard
+                  measurement={measurement}
+                  handleConfirmClick={handleConfirmClick}
+                  editingMeasurement={editingMeasurement}
+                  inputValue={inputValue}
+                  handleInputChange={handleInputChange}
+                  handleConfirmMeasurement={handleConfirmMeasurement}
+                  onImageClick={handleImageClick} // Pass handler to card
+                />
               </SwiperSlide>
             ))}
           </SwiperComponent>
         )}
       </Box>
+
+      {/* Render ImageViewer with current imageUrl */}
+      <ImageViewer
+        imageUrl={imageUrl ?? ''}
+        isOpen={!!imageUrl}
+        onClose={handleCloseImageViewer}
+      />
     </LayoutBase>
   );
 };

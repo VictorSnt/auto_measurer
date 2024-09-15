@@ -18,25 +18,33 @@ export const MeasurementResult: React.FC<MeasurementResultProps> = ({ file, meas
   };
 
   async function confirmMeasure() {
-    await confirmatinUsecase.execute(
-      measure.measure_uuid, 
-      confirmationValue
+    const originalValue = measure.measure_value;
+    const measureValue = (
+      confirmationValue === '' ?
+        originalValue :
+        confirmationValue
     );
+
+    await confirmatinUsecase.execute(
+      measure.measure_uuid,
+      measureValue
+    );
+    window.location.reload();
   }
 
   async function abortConfirmation() {
     await ConfirmMeasureUsecase.handleCancel();
   }
-  
+
   return (
     <div style={measureResultStyles.containerStyle}>
       {file ? (
         <>
           <h2 style={measureResultStyles.titleStyle}>Foto do Medidor:</h2>
           <div style={measureResultStyles.imageContainerStyle}>
-            <img src={URL.createObjectURL(file)} 
-              alt="Foto do Medidor" 
-              style={measureResultStyles.imageStyle} 
+            <img src={URL.createObjectURL(file)}
+              alt="Foto do Medidor"
+              style={measureResultStyles.imageStyle}
             />
           </div>
           <div style={measureResultStyles.measureContainerStyle}>
@@ -48,7 +56,7 @@ export const MeasurementResult: React.FC<MeasurementResultProps> = ({ file, meas
               type="text"
               value={confirmationValue}
               onChange={handleConfirmationChange}
-              placeholder="Digite a confirmação"
+              placeholder="Corrija a medição se necessario"
               style={measureResultStyles.inputStyle}
             />
             <div style={measureResultStyles.buttonContainerStyle}>

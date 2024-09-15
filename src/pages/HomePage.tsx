@@ -25,7 +25,7 @@ export const HomePage: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const createMeasure = async () => {
       if (file) {
         setShowLoading(true);
         try {
@@ -52,7 +52,7 @@ export const HomePage: React.FC = () => {
         }
       }
     };
-    fetchData();
+    createMeasure();
   }, [file, isWater]);
 
   return (

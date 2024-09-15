@@ -60,10 +60,13 @@ export class ConfirmMeasureService implements ConfirmService {
 export class ListCustomerMesures {
   private url = `${AppUrl}/customer_uuid/list`;
 
-  async getMeasures(customerId: string):
+  async getMeasures(customerId: string, filter: string|boolean =false):
     Promise<MeasureListPayloadResponse | null> {
     try {
       this.url = this.url.replace('customer_uuid', customerId);
+      if (filter) {
+        this.url += filter;
+      }
       const response: AxiosResponse<
         MeasureListPayloadResponse
       > = await axios.get(
