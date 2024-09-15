@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 import WaterIcon from '@mui/icons-material/Water';
 import GasMeterIcon from '@mui/icons-material/GasMeter';
 
-// Estilizando o botão
+
 const StyledButton = styled(Button)(() => ({
   borderRadius: '25px',
   padding: '10px 20px',

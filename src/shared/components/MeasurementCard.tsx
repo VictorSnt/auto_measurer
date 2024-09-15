@@ -8,17 +8,17 @@ interface MeasurementCardProps {
   measurement: Measurement;
   handleConfirmClick: (measurementUuid: string) => void;
   editingMeasurement: string | null;
-  inputValue: string;
+  confirmationValue: string;
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleConfirmMeasurement: (measurementUuid: string) => void;
-  onImageClick: (imageUrl: string) => void; // Prop for handling image clicks
+  onImageClick: (imageUrl: string) => void;
 }
 
 export const MeasurementCard: React.FC<MeasurementCardProps> = ({
   measurement,
   handleConfirmClick,
   editingMeasurement,
-  inputValue,
+  confirmationValue,
   handleInputChange,
   handleConfirmMeasurement,
   onImageClick,
@@ -30,9 +30,8 @@ export const MeasurementCard: React.FC<MeasurementCardProps> = ({
           sx={{ height: 140, backgroundSize: 'cover', cursor: 'pointer' }}
           image={ImgStorageService.getImage(measurement)}
           title={`Imagem da medição ${measurement.measure_uuid}`}
-          onClick={() => onImageClick(ImgStorageService.getImage(measurement))} // Use onImageClick
+          onClick={() => onImageClick(ImgStorageService.getImage(measurement))}
         />
-        {/* Overlay icon */}
         <IconButton
           sx={{
             position: 'absolute',
@@ -80,7 +79,7 @@ export const MeasurementCard: React.FC<MeasurementCardProps> = ({
                   fullWidth
                   label="Digite o valor"
                   variant="outlined"
-                  value={inputValue}
+                  value={confirmationValue}
                   onChange={handleInputChange}
                   sx={{ marginBottom: '8px' }}
                 />

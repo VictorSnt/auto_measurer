@@ -2,7 +2,7 @@ import { Box, TextField, Typography, Button } from '@mui/material';
 
 interface ConfirmationOverlayProps {
   isOverlayVisible: boolean;
-  inputValue: string;
+  confirmationValue: string;
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleConfirmMeasurement: () => void;
   setOverlayVisible: (visible: boolean) => void;
@@ -10,7 +10,7 @@ interface ConfirmationOverlayProps {
 
 const ConfirmationOverlay: React.FC<ConfirmationOverlayProps> = ({
   isOverlayVisible,
-  inputValue,
+  confirmationValue,
   handleInputChange,
   handleConfirmMeasurement,
   setOverlayVisible,
@@ -50,7 +50,7 @@ const ConfirmationOverlay: React.FC<ConfirmationOverlayProps> = ({
           fullWidth
           label="Digite o valor"
           variant="outlined"
-          value={inputValue}
+          value={confirmationValue}
           onChange={handleInputChange}
           sx={{ marginBottom: '16px' }}
         />

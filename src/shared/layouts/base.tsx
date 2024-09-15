@@ -48,8 +48,7 @@ export const LayoutBase:
           >
             <Header title={title} />
           </Box>
-
-
+          
           <Box
             sx={{
               flexGrow: 1,

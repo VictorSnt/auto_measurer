@@ -36,13 +36,12 @@ export const HomePage: React.FC = () => {
             responseSetter: setMeasure,
           };
           await CreateMeasureUseCase.execute(usecasePayload);
-        } catch (error) {
-          console.error(error);
-          if (error instanceof Error) {
-            toaster.notify.error('Oops', error.message);
-          } else {
-            toaster.notify.error('Oops', 'Ocorreu um erro inesperado');
-          }
+        } catch (error: unknown) {
+          const erroMsg = (error instanceof Error? 
+            error.message:
+            'Ocorreu um erro inesperado'
+          );
+          toaster.notify.error('Oops', erroMsg);
           setFile(null);
           if (fileInputRef.current) {
             fileInputRef.current.value = '';

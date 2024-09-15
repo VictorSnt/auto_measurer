@@ -15,7 +15,7 @@ import { ImageViewer } from '../shared/components/ImageViewer';
 
 export const MeasureListage: React.FC = () => {
 
-  const [inputValue, setInputValue] = useState<string>('');
+  const [confirmationValue, setconfirmationValue] = useState<string>('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [filterType, setFilterType] = useState<'ALL' | 'WATER' | 'GAS'>('ALL');
@@ -25,7 +25,7 @@ export const MeasureListage: React.FC = () => {
 
   const loadMeasurements = async (type: 'ALL' | 'WATER' | 'GAS') => {
     const measurementsLister = new ListCustomerMesures();
-    const customerId = localStorage.getItem('customerId') || 'guest';
+    const customerId = localStorage.getItem('customerId') || 'willGet404';
     try {
       const response = await measurementsLister.getMeasures(
         customerId,
@@ -37,15 +37,14 @@ export const MeasureListage: React.FC = () => {
       } else {
         setMeasurements([]);
       }
-    } catch (error: any) {
-      console.error(error);
+    } catch (error: unknown) {
       setMeasurements([]);
-      toaster.notify.error(
-        'Oops',
+      const errorMsg = (
         error instanceof Error ?
           error.message :
           'Ocorreu um erro inesperado'
       );
+      toaster.notify.error('Oops', errorMsg);
     }
   };
 
@@ -58,22 +57,22 @@ export const MeasureListage: React.FC = () => {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
+    setconfirmationValue(event.target.value);
   };
 
   const handleConfirmMeasurement = async (measurementUuid: string) => {
     const confirmMeasure = new ConfirmMeasureUsecase();
     try {
-      await confirmMeasure.execute(measurementUuid, inputValue);
+      await confirmMeasure.execute(measurementUuid, confirmationValue);
       setEditingMeasurement(null);
-      setInputValue('');
+      setconfirmationValue('');
       await loadMeasurements(filterType);
     } catch (error: any) {
       console.error(error);
       toaster.notify.error(
         'Oops', error instanceof Error ?
-          error.message :
-          'Ocorreu um erro inesperado'
+        error.message :
+        'Ocorreu um erro inesperado'
       );
     }
   };
@@ -149,7 +148,7 @@ export const MeasureListage: React.FC = () => {
                   measurement={measurement}
                   handleConfirmClick={handleConfirmClick}
                   editingMeasurement={editingMeasurement}
-                  inputValue={inputValue}
+                  confirmationValue={confirmationValue}
                   handleInputChange={handleInputChange}
                   handleConfirmMeasurement={handleConfirmMeasurement}
                   onImageClick={handleImageClick}
