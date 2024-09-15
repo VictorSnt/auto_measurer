@@ -68,19 +68,12 @@ export const Header: React.FC<IHeaderProps> = ({ title }) => {
 
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             <Link
-              href="/home"
-              sx={linkStyles}
-            >
-              Pagina inicial
-            </Link>
-            <Link
               href="/listagem"
               sx={linkStyles}
             >
-              Listagem de medidas
+              historico de Leituras
             </Link>
           </Box>
-
 
           <ThemeToggleButton onClick={toggleTheme} color="inherit">
             {themeName === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}

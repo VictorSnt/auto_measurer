@@ -22,10 +22,24 @@ export interface ConfirmMeasurePayloadResponse {
 
 
 export interface MeasureService {
-  getMeasure(): Promise<CreateMeasurePayloadResponse|null>;
+  getMeasure(): Promise<CreateMeasurePayloadResponse | null>;
 }
 
 
 export interface ConfirmService {
-  confirmMeasure(): Promise<ConfirmMeasurePayloadResponse|null>;
+  confirmMeasure(): Promise<ConfirmMeasurePayloadResponse | null>;
+}
+
+
+export interface Measurement {
+  measure_uuid: string,
+  measure_datetime: Date,
+  measure_type: string,
+  has_confirmed: boolean,
+  image_url: string
+}
+
+export interface MeasureListPayloadResponse {
+  customer_code: string,
+  measures: Measurement[]
 }

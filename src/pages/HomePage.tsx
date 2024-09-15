@@ -1,3 +1,4 @@
+import loadingAnimation from '../assets/animations/searchAnimation.json';
 import React, { useEffect, useRef, useState } from 'react';
 import { LayoutBase } from '../shared/layouts/base';
 import { MeasurementSelector } from '../shared/components/MeasurementSelector';
@@ -7,13 +8,15 @@ import { MeasurementResult } from '../shared/components/MeasurementResult';
 import { CreateMeasurePayloadResponse } from '../shared/services/measureServiceInterfaces';
 import { CreateMeasureUseCase } from '../usecase/createMeasureUseCase';
 import { Toaster } from '../shared/services/notificationService';
+import { LoadingAnimation } from '../shared/components/LoadingAnimation';
 
 
 export const HomePage: React.FC = () => {
-  const [isWater, setIsWater] = useState<boolean>(true);
   const [file, setFile] = useState<File | null>(null);
-  const [measure, setMeasure] = useState<CreateMeasurePayloadResponse | null>(null);
+  const [isWater, setIsWater] = useState<boolean>(true);
+  const [showLoading, setShowLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [measure, setMeasure] = useState<CreateMeasurePayloadResponse | null>(null);
 
   const handleChange = (type: boolean) => {
     setIsWater(type);
@@ -22,31 +25,42 @@ export const HomePage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (file) {
-      const usecasePayload = {
-        measure_type: isWater ? 'WATER' : 'GAS',
-        file: file,
-        responseSetter: setMeasure,
-      };
-      CreateMeasureUseCase.execute(usecasePayload)
-        .catch(error => {
+    const fetchData = async () => {
+      if (file) {
+        setShowLoading(true);
+        try {
+          const usecasePayload = {
+            measure_type: isWater ? 'WATER' : 'GAS',
+            file: file,
+            responseSetter: setMeasure,
+          };
+          await CreateMeasureUseCase.execute(usecasePayload);
+        } catch (error) {
           const toaster = new Toaster();
           console.error(error);
           if (error instanceof Error) {
-            toaster.notify.error('Opps', error.message);
+            toaster.notify.error('Oops', error.message);
           } else {
-            toaster.notify.error('Opps', 'Ocorreu um erro inesperado');
+            toaster.notify.error('Oops', 'Ocorreu um erro inesperado');
           }
           setFile(null);
           if (fileInputRef.current) {
             fileInputRef.current.value = '';
           }
-        });
-    }
+        } finally {
+          setShowLoading(false);
+        }
+      }
+    };
+    fetchData();
   }, [file, isWater]);
 
   return (
     <LayoutBase title='Medição'>
+      <LoadingAnimation 
+        loadingAnimation={loadingAnimation} 
+        showLoading={showLoading}
+      />
       <div style={{ textAlign: 'center', padding: '20px' }}>
         {!measure ? (
           <>
