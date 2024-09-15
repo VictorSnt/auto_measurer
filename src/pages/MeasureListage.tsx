@@ -71,8 +71,8 @@ export const MeasureListage: React.FC = () => {
       console.error(error);
       toaster.notify.error(
         'Oops', error instanceof Error ?
-        error.message :
-        'Ocorreu um erro inesperado'
+          error.message :
+          'Ocorreu um erro inesperado'
       );
     }
   };
