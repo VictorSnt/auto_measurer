@@ -56,7 +56,7 @@ export const HomePage: React.FC = () => {
   }, [file, isWater]);
 
   return (
-    <LayoutBase title='Medição'>
+    <LayoutBase title='Nova Medição'>
       <LoadingAnimation 
         loadingAnimation={loadingAnimation} 
         showLoading={showLoading}

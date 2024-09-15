@@ -66,7 +66,7 @@ export const MeasureListage: React.FC = () => {
   };
 
   return (
-    <LayoutBase title="Medição">
+    <LayoutBase title="Historico de Medições">
       <Box sx={{ textAlign: 'center', padding: '20px' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Historico de Medições
