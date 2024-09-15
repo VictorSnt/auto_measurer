@@ -12,6 +12,12 @@ import Typography from '@mui/material/Typography';
 import { Box, TextField } from '@mui/material';
 import { ConfirmMeasureUsecase } from '../usecase/confirmMeasureUseCase';
 
+
+import { Swiper as SwiperComponent, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+
 export const MeasureListage: React.FC = () => {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -29,11 +35,7 @@ export const MeasureListage: React.FC = () => {
       }
     } catch (error: any) {
       console.error(error);
-      toaster.notify.error(
-        'Oops', error instanceof Error ?
-        error.message :
-        'Ocorreu um erro inesperado'
-      );
+      toaster.notify.error('Oops', error instanceof Error ? error.message : 'Ocorreu um erro inesperado');
       setError(error.message);
     }
   }, [toaster]);
@@ -59,70 +61,95 @@ export const MeasureListage: React.FC = () => {
       await loadMeasurements();
     } catch (error: any) {
       console.error(error);
-      toaster.notify.error(
-        'Oops', error instanceof Error ?
-        error.message : 'Ocorreu um erro inesperado'
-      );
+      toaster.notify.error('Oops', error instanceof Error ? error.message : 'Ocorreu um erro inesperado');
     }
   };
 
   return (
     <LayoutBase title="Medição">
       <Box sx={{ textAlign: 'center', padding: '20px' }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Historico de Medições
+        </Typography>
+        <Typography variant="h6" color="text.secondary" gutterBottom>
+          Visualize e confirme suas medições abaixo
+        </Typography>
         {error && <Typography variant="body1" color="error">{error}</Typography>}
         {measurements.length === 0 ? (
           <Typography variant="body1">Nenhuma medição encontrada.</Typography>
         ) : (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
+          <SwiperComponent
+            spaceBetween={16}
+            slidesPerView="auto"
+            navigation={true} 
+            modules={[Navigation]}
+            breakpoints={{
+              640: {
+                slidesPerView: 1,
+                spaceBetween: 20,
+              },
+              768: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 20,
+              },
+            }}
+            style={{ padding: '20px' }}
+          >
             {measurements.map(measurement => (
-              <Card key={measurement.measure_uuid} sx={{ maxWidth: 345, display: 'flex', flexDirection: 'column' }}>
-                <CardMedia
-                  sx={{ height: 140, backgroundSize: 'cover' }}
-                  image={measurement.image_url}
-                  title={`Imagem da medição ${measurement.measure_uuid}`}
-                />
-                <CardContent sx={{ flex: 1 }}>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {measurement.measure_type === 'WATER' ? 'Água' : 'Gás'}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Data: {new Date(measurement.measure_datetime).toLocaleDateString()}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Confirmado: {measurement.has_confirmed ? 'Sim' : 'Não'}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  {!measurement.has_confirmed && (
-                    <>
-                      <Button size="small" onClick={() => handleConfirmClick(measurement.measure_uuid)}>
-                        Confirmar Medida
-                      </Button>
-                      {editingMeasurement === measurement.measure_uuid && (
-                        <Box sx={{ marginTop: '16px' }}>
-                          <TextField
-                            fullWidth
-                            label="Digite o valor"
-                            variant="outlined"
-                            value={inputValue}
-                            onChange={handleInputChange}
-                            sx={{ marginBottom: '8px' }}
-                          />
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => handleConfirmMeasurement(measurement.measure_uuid)}
-                          >
-                            Confirmar
-                          </Button>
-                        </Box>
-                      )}
-                    </>
-                  )}
-                </CardActions>
-              </Card>
+              <SwiperSlide key={measurement.measure_uuid}>
+                <Card sx={{ maxWidth: 345, display: 'flex', flexDirection: 'column' }}>
+                  <CardMedia
+                    sx={{ height: 140, backgroundSize: 'cover' }}
+                    image={measurement.image_url}
+                    title={`Imagem da medição ${measurement.measure_uuid}`}
+                  />
+                  <CardContent sx={{ flex: 1 }}>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {measurement.measure_type === 'WATER' ? 'Água' : 'Gás'}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Data: {new Date(measurement.measure_datetime).toLocaleDateString()}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Confirmado: {measurement.has_confirmed ? 'Sim' : 'Não'}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    {!measurement.has_confirmed && (
+                      <>
+                        <Button size="small" onClick={() => handleConfirmClick(measurement.measure_uuid)}>
+                          Confirmar Medida
+                        </Button>
+                        {editingMeasurement === measurement.measure_uuid && (
+                          <Box sx={{ marginTop: '16px' }}>
+                            <TextField
+                              fullWidth
+                              label="Digite o valor"
+                              variant="outlined"
+                              value={inputValue}
+                              onChange={handleInputChange}
+                              sx={{ marginBottom: '8px' }}
+                            />
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              onClick={() => handleConfirmMeasurement(measurement.measure_uuid)}
+                            >
+                              Confirmar
+                            </Button>
+                          </Box>
+                        )}
+                      </>
+                    )}
+                  </CardActions>
+                </Card>
+              </SwiperSlide>
             ))}
-          </Box>
+          </SwiperComponent>
         )}
       </Box>
     </LayoutBase>
