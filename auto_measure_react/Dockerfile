@@ -14,6 +14,6 @@ FROM nginx:alpine
 
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
 
-COPY --from=build /nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /usr/src/app/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 CMD ["nginx", "-g", "daemon off;"]
