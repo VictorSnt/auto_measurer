@@ -12,10 +12,26 @@ services:
 
   nginx:
     stdin_open: true
-    build: 
+    build:
       context: auto_measure_react
-    ports: 
+    ports:
       - '80:80'
+    env_file: ".env"
+    restart: always
+    networks:
+      - auto_measure_network
+
+  postgres:
+    image: postgres:13
+    container_name: meu-postgres
+    environment:
+      POSTGRES_USER: change_me
+      POSTGRES_PASSWORD: change_me
+      POSTGRES_DB: change_me_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     restart: always
     networks:
       - auto_measure_network
@@ -23,3 +39,6 @@ services:
 networks:
   auto_measure_network:
     driver: bridge
+
+volumes:
+  postgres_data:

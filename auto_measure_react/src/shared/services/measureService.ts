@@ -86,7 +86,6 @@ export class ListCustomerMesures {
 
 
 const genericErrorHandler = (error: unknown): never => {
-  console.error(error);
   if (axios.isAxiosError(error)) {
     if (error.response) {
       const errorMessage = (

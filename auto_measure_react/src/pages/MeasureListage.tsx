@@ -67,7 +67,6 @@ export const MeasureListage: React.FC = () => {
       setconfirmationValue('');
       await loadMeasurements(filterType);
     } catch (error: any) {
-      console.error(error);
       toaster.notify.error(
         'Oops', error instanceof Error ?
           error.message :
