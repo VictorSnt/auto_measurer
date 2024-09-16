@@ -1,21 +1,34 @@
 import { Box, TextField, Typography, Button } from '@mui/material';
+import React from 'react';
 
 interface ConfirmationOverlayProps {
   isOverlayVisible: boolean;
   confirmationValue: string;
-  handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleConfirmationValueChange: (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => void;
   handleConfirmMeasurement: () => void;
-  setOverlayVisible: (visible: boolean) => void;
+  handlerOverlayVisible: (visible: boolean) => void;
 }
 
-const ConfirmationOverlay: React.FC<ConfirmationOverlayProps> = ({
+export const ConfirmationOverlay: React.FC<ConfirmationOverlayProps> = ({
   isOverlayVisible,
   confirmationValue,
-  handleInputChange,
+  handleConfirmationValueChange,
   handleConfirmMeasurement,
-  setOverlayVisible,
+  handlerOverlayVisible
 }) => {
   if (!isOverlayVisible) return null;
+
+
+  const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    handlerOverlayVisible(false);
+  };
+
+  
+  const handleContentClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+  };
 
   return (
     <Box
@@ -31,6 +44,7 @@ const ConfirmationOverlay: React.FC<ConfirmationOverlayProps> = ({
         alignItems: 'center',
         zIndex: 9999,
       }}
+      onClick={handleOverlayClick}
     >
       <Box
         className="overlay-content"
@@ -42,6 +56,7 @@ const ConfirmationOverlay: React.FC<ConfirmationOverlayProps> = ({
           maxWidth: '500px',
           width: '100%',
         }}
+        onClick={handleContentClick}
       >
         <Typography variant="h6" gutterBottom>
           Confirmar Medida
@@ -51,7 +66,7 @@ const ConfirmationOverlay: React.FC<ConfirmationOverlayProps> = ({
           label="Digite o valor"
           variant="outlined"
           value={confirmationValue}
-          onChange={handleInputChange}
+          onChange={handleConfirmationValueChange}
           sx={{ marginBottom: '16px' }}
         />
         <Button
@@ -65,5 +80,3 @@ const ConfirmationOverlay: React.FC<ConfirmationOverlayProps> = ({
     </Box>
   );
 };
-
-export default ConfirmationOverlay;

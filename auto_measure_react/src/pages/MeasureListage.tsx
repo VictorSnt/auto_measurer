@@ -11,6 +11,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import { MeasurementCard } from '../shared/components/MeasurementCard';
 import { ImageViewer } from '../shared/components/ImageViewer';
+import { ConfirmationOverlay } from '../shared/components/ConfirmationOverlay';
 
 
 export const MeasureListage: React.FC = () => {
@@ -19,6 +20,7 @@ export const MeasureListage: React.FC = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [filterType, setFilterType] = useState<'ALL' | 'WATER' | 'GAS'>('ALL');
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [editingMeasurement, setEditingMeasurement] = useState<string | null>(null);
 
   const toaster = new Toaster();
@@ -26,6 +28,7 @@ export const MeasureListage: React.FC = () => {
   const loadMeasurements = async (type: 'ALL' | 'WATER' | 'GAS') => {
     const measurementsLister = new ListCustomerMesures();
     const customerId = localStorage.getItem('customerId') || 'willGet404';
+    
     try {
       const response = await measurementsLister.getMeasures(
         customerId,
@@ -52,19 +55,15 @@ export const MeasureListage: React.FC = () => {
     loadMeasurements(filterType);
   }, [filterType]);
 
-  const handleConfirmClick = (measurementUuid: string) => {
-    setEditingMeasurement(measurementUuid);
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleConfirmationValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setconfirmationValue(event.target.value);
   };
 
-  const handleConfirmMeasurement = async (measurementUuid: string) => {
+  const handleConfirmMeasurement = async () => {
     const confirmMeasure = new ConfirmMeasureUsecase();
+    if (!editingMeasurement) return;
     try {
-      await confirmMeasure.execute(measurementUuid, confirmationValue);
-      setEditingMeasurement(null);
+      await confirmMeasure.execute(editingMeasurement, confirmationValue);
       setconfirmationValue('');
       await loadMeasurements(filterType);
     } catch (error: any) {
@@ -74,6 +73,9 @@ export const MeasureListage: React.FC = () => {
           error.message :
           'Ocorreu um erro inesperado'
       );
+    } finally {
+      setShowConfirmation(false);
+      setEditingMeasurement(null);
     }
   };
 
@@ -83,6 +85,12 @@ export const MeasureListage: React.FC = () => {
 
   const handleCloseImageViewer = () => {
     setImageUrl(null);
+  };
+
+
+  const handlerConfirmationOverlay = (uuid: string) => {
+    setEditingMeasurement(uuid);
+    setShowConfirmation(true);
   };
 
   return (
@@ -146,11 +154,7 @@ export const MeasureListage: React.FC = () => {
               <SwiperSlide key={measurement.measure_uuid}>
                 <MeasurementCard
                   measurement={measurement}
-                  handleConfirmClick={handleConfirmClick}
-                  editingMeasurement={editingMeasurement}
-                  confirmationValue={confirmationValue}
-                  handleInputChange={handleInputChange}
-                  handleConfirmMeasurement={handleConfirmMeasurement}
+                  showConfirmOverlay={handlerConfirmationOverlay}
                   onImageClick={handleImageClick}
                 />
               </SwiperSlide>
@@ -159,6 +163,13 @@ export const MeasureListage: React.FC = () => {
         )}
       </Box>
 
+      <ConfirmationOverlay
+        isOverlayVisible={showConfirmation}
+        confirmationValue={confirmationValue} 
+        handleConfirmationValueChange={handleConfirmationValueChange} 
+        handleConfirmMeasurement={handleConfirmMeasurement}
+        handlerOverlayVisible={setShowConfirmation}
+      />
       <ImageViewer
         imageUrl={imageUrl ?? ''}
         isOpen={!!imageUrl}

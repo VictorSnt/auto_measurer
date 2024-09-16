@@ -4,17 +4,22 @@ services:
   api:
     build: auto_measure_api
     ports:
-      - "3000:3000"
+      - '3000:3000'
+    env_file: ".env"
+    restart: always
     networks:
-      - app-network
+      - auto_measure_network
 
-  react:
-    build: auto_measure_react
-    ports:
-      - '80:8080'
+  nginx:
+    stdin_open: true
+    build: 
+      context: auto_measure_react
+    ports: 
+      - '80:80'
+    restart: always
     networks:
-      - app-network
+      - auto_measure_network
 
 networks:
-  app-network:
+  auto_measure_network:
     driver: bridge

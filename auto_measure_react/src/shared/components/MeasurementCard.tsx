@@ -6,21 +6,13 @@ import ZoomIn from '@mui/icons-material/ZoomIn';
 
 interface MeasurementCardProps {
   measurement: Measurement;
-  handleConfirmClick: (measurementUuid: string) => void;
-  editingMeasurement: string | null;
-  confirmationValue: string;
-  handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleConfirmMeasurement: (measurementUuid: string) => void;
+  showConfirmOverlay: CallableFunction;
   onImageClick: (imageUrl: string) => void;
 }
 
 export const MeasurementCard: React.FC<MeasurementCardProps> = ({
   measurement,
-  handleConfirmClick,
-  editingMeasurement,
-  confirmationValue,
-  handleInputChange,
-  handleConfirmMeasurement,
+  showConfirmOverlay,
   onImageClick,
 }) => {
   return (
@@ -69,29 +61,10 @@ export const MeasurementCard: React.FC<MeasurementCardProps> = ({
           <>
             <Button
               size="small"
-              onClick={() => handleConfirmClick(measurement.measure_uuid)}
+              onClick={() => showConfirmOverlay(measurement.measure_uuid)}
             >
               Confirmar Medida
             </Button>
-            {editingMeasurement === measurement.measure_uuid && (
-              <Box sx={{ marginTop: '16px' }}>
-                <TextField
-                  fullWidth
-                  label="Digite o valor"
-                  variant="outlined"
-                  value={confirmationValue}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: '8px' }}
-                />
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => handleConfirmMeasurement(measurement.measure_uuid)}
-                >
-                  Confirmar
-                </Button>
-              </Box>
-            )}
           </>
         )}
       </CardActions>

@@ -7,5 +7,5 @@ export function errorHandler(err: any, res: Response) {
     return res.status(err.status).json(err.response);
   }
   console.error(err);
-  res.status(500).json({ message: 'Oops something went wrong!' });
+  res.status(500).json({ message: err.message });
 }
