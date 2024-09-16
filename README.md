@@ -37,9 +37,9 @@ This command will build and start the necessary containers using the settings sp
 ### note
 
 Project api runs on port 3000
-Project frontenc runs on port 80
-If you want to access the app outside the server, font forget to add the
+Project frontend runs on port 80
+If you want to access the app outside the server, don't forget to add the
 ```bash
     REACT_APP_API_URL=http://Your_host:3000
 ```
-On the .env.production inside the auto_measure_react project
+On the .env.production file inside the auto_measure_react project
